@@ -1,6 +1,6 @@
 {
   "name": "mtgdeck",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "build your Magic: The Gathering deck from the command-line",
   "main": "index.js",
   "bin": "./index.js",
