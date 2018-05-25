@@ -10,6 +10,9 @@ const titleCase = require('title-case')
 
 const cardsDirectory = path.resolve(__dirname, './tmp')
 const cardsJSON = path.resolve(cardsDirectory, './AllCards.json')
+const userHome = require('user-home')
+const defaultDeckLocation = path.resolve(userHome, './deck.json')
+const defaultMessage = 'type: <command> [options]'
 let cards = null
 let deck = {}
 
@@ -38,7 +41,7 @@ const parser = require('yargs')
         console.info(`${key}\t\t${card.manaCost || ''}\n${card.type}\n\n${card.text}`)
         console.info('-------\n')
       })
-      return argv.cb(null, '☝️ results')
+      return argv.cb(null, defaultMessage)
     }
   })
   .command('add <name...>', 'add a card to your deck', () => {}, (argv) => {
@@ -83,10 +86,15 @@ const parser = require('yargs')
         console.info(`${name} x ${deck[name].count}`)
       })
       console.info('-----\n')
-      return argv.cb(null, `☝️ your deck`)
+      return argv.cb(null, defaultMessage)
     }
   })
-  .command('save <path>', 'save your deck', () => {}, (argv) => {
+  .command('save [path]', 'save your deck', (yargs) => {
+    yargs.positional('path', {
+      describe: 'where should your deck be saved?',
+      default: defaultDeckLocation
+    })
+  }, (argv) => {
     try {
       fs.writeFileSync(argv.path, JSON.stringify(deck, null, 2), 'utf8')
       return argv.cb(null, `deck saved to ${argv.path}`)
@@ -94,10 +102,16 @@ const parser = require('yargs')
       return argv.cb(null, err.message)
     }
   })
-  .command('load <path>', 'load a deck', () => {}, (argv) => {
+  .command('load [path]', 'load a deck', (yargs) => {
+    yargs.positional('path', {
+      describe: 'where should your deck be loaded from?',
+      default: defaultDeckLocation
+    })
+  }, (argv) => {
     try {
       deck = JSON.parse(fs.readFileSync(argv.path, 'utf8'))
-      return argv.cb(null, 'deck loaded')
+      console.info('deck loaded')
+      return argv.cb(null, defaultMessage)
     } catch (err) {
       return argv.cb(null, err.message)
     }
@@ -124,7 +138,7 @@ function mtgdeck (cmd, context, filename, callback) {
   parser.parse(cmd, {cb: callback}, (_err, argv, stdout) => {
     if (stdout) {
       console.info(`${stdout}\n`)
-      return callback(null, '☝️')
+      return callback(null, 'type: <command> [options]')
     }
   })
 }
