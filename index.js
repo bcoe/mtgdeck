@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const chalk = require('chalk')
 const fs = require('fs')
 const getMtgJson = require('mtg-json')
 const mkdirp = require('mkdirp')
@@ -117,6 +118,7 @@ function loadCards () {
     return null
   }
 }
+parser.$0 = ''
 
 function mtgdeck (cmd, context, filename, callback) {
   parser.parse(cmd, {cb: callback}, (_err, argv, stdout) => {
@@ -127,6 +129,6 @@ function mtgdeck (cmd, context, filename, callback) {
   })
 }
 
-console.info('welcome to Ben\'s Magic: The Gathering deck building app\n')
-console.info('run "help" to get started')
+console.info(`${chalk.blue('welcome to Ben\'s')} ${chalk.yellow('Magic')} The Gathering ${chalk.blue('deck building app')}\n`)
+console.info(`run "${chalk.green('help')}" to get started`)
 repl.start({prompt: '> ', eval: mtgdeck})
